@@ -3,6 +3,7 @@ package sl
 import (
 	"io"
 	"log/slog"
+	"wallet-service/internal/lib/logger/handlers/slogpretty"
 )
 
 var logger *slog.Logger
