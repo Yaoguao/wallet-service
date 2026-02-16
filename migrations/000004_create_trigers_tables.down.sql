@@ -1,0 +1,1 @@
+DROP TRIGGER IF EXISTS trg_set_updated_at ON wallets;
