@@ -14,10 +14,10 @@ import (
 
 type WalletRepository struct {
 	postgres *pgxdriver.Postgres
-	log      slog.Logger
+	log      *slog.Logger
 }
 
-func NewWalletRepository(log slog.Logger, postgres *pgxdriver.Postgres) *WalletRepository {
+func NewWalletRepository(log *slog.Logger, postgres *pgxdriver.Postgres) *WalletRepository {
 	return &WalletRepository{
 		postgres: postgres,
 		log:      log,

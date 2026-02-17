@@ -158,7 +158,7 @@ func (ws *WalletService) Withdraw(ctx context.Context, walletID uuid.UUID, amoun
 			ws.walletBalanceUpdater.DecreaseBalance(ctx, tx, walletID, amount)
 
 		if err != nil {
-			return err
+			return err // TODO - add handle error for ErrInsufficientFunds
 		}
 
 		if err := ws.createOperationTx(ctx, tx, walletID, models.Withdraw, amount); err != nil {

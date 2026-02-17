@@ -25,7 +25,7 @@ const (
 type Postgres struct {
 	Builder squirrel.StatementBuilderType
 	Pool    *pgxpool.Pool
-	logger  slog.Logger
+	logger  *slog.Logger
 
 	connAttempts   int
 	baseRetryDelay time.Duration
@@ -35,7 +35,7 @@ type Postgres struct {
 	maxIdleTime    time.Duration
 }
 
-func New(dsn string, logger slog.Logger, opts ...Option) (*Postgres, error) {
+func New(dsn string, logger *slog.Logger, opts ...Option) (*Postgres, error) {
 	const op = "storage.postgres.New"
 
 	pg := &Postgres{

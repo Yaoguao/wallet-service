@@ -12,10 +12,10 @@ import (
 
 type OperationRepository struct {
 	postgres *pgxdriver.Postgres
-	log      slog.Logger
+	log      *slog.Logger
 }
 
-func NewOperationRepository(log slog.Logger, postgres *pgxdriver.Postgres) *OperationRepository {
+func NewOperationRepository(log *slog.Logger, postgres *pgxdriver.Postgres) *OperationRepository {
 	return &OperationRepository{
 		postgres: postgres,
 		log:      log,

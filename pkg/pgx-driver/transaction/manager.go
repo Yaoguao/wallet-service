@@ -32,14 +32,14 @@ type Manager interface {
 
 type manager struct {
 	pool   *pgxdriver.Postgres
-	logger slog.Logger
+	logger *slog.Logger
 
 	maxAttempts    int
 	baseRetryDelay time.Duration
 	maxRetryDelay  time.Duration
 }
 
-func NewManager(pool *pgxdriver.Postgres, logger slog.Logger, opts ...Option) (Manager, error) {
+func NewManager(pool *pgxdriver.Postgres, logger *slog.Logger, opts ...Option) (Manager, error) {
 	tm := &manager{
 		pool:   pool,
 		logger: logger,
