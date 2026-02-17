@@ -18,10 +18,10 @@ type Config struct {
 	Storage struct {
 		Postgres struct {
 			DSN            string
-			MaxOpenConns   int           `yaml:"max_open_conns"`
-			MaxIdleConns   int           `yaml:"max_idle_conns"`
+			MaxOpenConns   int32         `yaml:"max_open_conns"`
+			MaxIdleConns   int32         `yaml:"max_idle_conns"`
 			MaxIdleTime    time.Duration `yaml:"max_idle_time"`
-			ConnAttempts   int           `yaml:"conn_attempts"`
+			ConnAttempts   int32         `yaml:"conn_attempts"`
 			BaseRetryDelay time.Duration `yaml:"base_retry_delay"`
 			MaxRetryDelay  time.Duration `yaml:"max_retry_delay"`
 		} `yaml:"postgres"`
