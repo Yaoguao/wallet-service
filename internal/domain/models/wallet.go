@@ -7,8 +7,8 @@ import (
 )
 
 type Wallet struct {
-	ID        uuid.UUID `db:"id"`
-	Balance   int64     `db:"balance"`
-	CreatedAt time.Time `db:"created_at"`
-	UpdatedAt time.Time `db:"updated_at"`
+	ID        uuid.UUID `json:"id" db:"id"`
+	Balance   int64     `json:"balance" db:"balance"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }

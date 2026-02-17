@@ -14,9 +14,9 @@ const (
 )
 
 type Operation struct {
-	ID        uuid.UUID     `db:"id"`
-	WalletID  uuid.UUID     `db:"wallet_id"`
-	Type      OperationType `db:"type"`
-	Amount    int64         `db:"amount"`
-	CreatedAt time.Time     `db:"created_at"`
+	ID        uuid.UUID     `json:"id" db:"id"`
+	WalletID  uuid.UUID     `json:"wallet_id" db:"wallet_id"`
+	Type      OperationType `json:"type" db:"type"`
+	Amount    int64         `json:"amount" db:"amount"`
+	CreatedAt time.Time     `json:"created_at" db:"created_at"`
 }
