@@ -48,7 +48,7 @@ func TestWalletService_Deposit_Success(t *testing.T) {
 		CreateOperation(ctx, gomock.Any(), gomock.Any()).
 		Return(nil)
 
-	service := &WalletService{
+	service := &ServiceWallet{
 		txManager:            mockTxManager,
 		walletBalanceUpdater: mockBalanceUpdater,
 		operationSaver:       mockOperationSaver,
@@ -89,7 +89,7 @@ func TestWalletService_Withdraw_InsufficientFunds(t *testing.T) {
 		DecreaseBalance(ctx, gomock.Any(), walletID, amount).
 		Return(int64(0), time.Time{}, services.ErrInsufficientFunds)
 
-	service := &WalletService{
+	service := &ServiceWallet{
 		txManager:            mockTxManager,
 		walletBalanceUpdater: mockBalanceUpdater,
 		operationSaver:       mockOperationSaver,

@@ -41,10 +41,10 @@ type BalanceUpdaterWallet interface {
 	) (int64, time.Time, error)
 }
 
-type WalletService struct {
+type ServiceWallet struct {
 	txManager transaction.Manager
 
-	log                  slog.Logger
+	log                  *slog.Logger
 	walletSaver          SaverWallet
 	walletGetter         GetterWallet
 	walletBalanceUpdater BalanceUpdaterWallet
@@ -54,14 +54,14 @@ type WalletService struct {
 
 func New(
 	txManager transaction.Manager,
-	log slog.Logger,
+	log *slog.Logger,
 	walletSaver SaverWallet,
 	walletGetter GetterWallet,
 	walletBalanceUpdater BalanceUpdaterWallet,
 	operationSaver OperationSaver,
-) *WalletService {
+) *ServiceWallet {
 
-	return &WalletService{
+	return &ServiceWallet{
 		txManager:            txManager,
 		log:                  log,
 		walletSaver:          walletSaver,
@@ -71,7 +71,7 @@ func New(
 	}
 }
 
-func (ws *WalletService) CreateWallet(ctx context.Context, amount int64) (*models.Wallet, error) {
+func (ws *ServiceWallet) CreateWallet(ctx context.Context, amount int64) (*models.Wallet, error) {
 	const op = "services.wallet.CreateWallet"
 	if amount < 0 {
 		ws.log.Error("amount negative value")
@@ -91,7 +91,7 @@ func (ws *WalletService) CreateWallet(ctx context.Context, amount int64) (*model
 	return wallet, nil
 }
 
-func (ws *WalletService) GetWallet(ctx context.Context, id uuid.UUID) (*models.Wallet, error) {
+func (ws *ServiceWallet) GetWallet(ctx context.Context, id uuid.UUID) (*models.Wallet, error) {
 	const op = "services.wallet.GetWallet"
 	if id == uuid.Nil {
 		return nil, services.ErrInvalidWalletID
@@ -109,7 +109,7 @@ func (ws *WalletService) GetWallet(ctx context.Context, id uuid.UUID) (*models.W
 	return wallet, nil
 }
 
-func (ws *WalletService) Deposit(ctx context.Context, walletID uuid.UUID, amount int64) (*models.Wallet, error) {
+func (ws *ServiceWallet) Deposit(ctx context.Context, walletID uuid.UUID, amount int64) (*models.Wallet, error) {
 	const op = "services.wallet.Deposit"
 
 	if amount <= 0 {
@@ -145,7 +145,7 @@ func (ws *WalletService) Deposit(ctx context.Context, walletID uuid.UUID, amount
 	return result, nil
 }
 
-func (ws *WalletService) Withdraw(ctx context.Context, walletID uuid.UUID, amount int64) (*models.Wallet, error) {
+func (ws *ServiceWallet) Withdraw(ctx context.Context, walletID uuid.UUID, amount int64) (*models.Wallet, error) {
 	const op = "services.wallet.Withdraw"
 
 	if amount <= 0 {
@@ -181,7 +181,7 @@ func (ws *WalletService) Withdraw(ctx context.Context, walletID uuid.UUID, amoun
 	return result, nil
 }
 
-func (ws *WalletService) createOperationTx(
+func (ws *ServiceWallet) createOperationTx(
 	ctx context.Context,
 	tx pgxdriver.QueryExecuter,
 	walletID uuid.UUID,
