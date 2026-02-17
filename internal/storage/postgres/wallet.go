@@ -126,7 +126,9 @@ func (wr *WalletRepository) DecreaseBalance(
 	var newBalance int64
 	var updatedAt time.Time
 	err = tx.QueryRow(ctx, query, args...).Scan(&newBalance, &updatedAt)
+
 	if err != nil {
+		wr.log.Debug(op, err.Error())
 		return 0, time.Time{}, transaction.HandleError(op, "update", err)
 	}
 
