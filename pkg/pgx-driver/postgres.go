@@ -13,6 +13,8 @@ import (
 
 const (
 	_defaultMaxPoolSize    = 100
+	_defaultMinConns       = 50
+	_defaultMaxIdleTime    = 10 * time.Minute
 	_defaultConnAttempts   = 10
 	_defaultBaseRetryDelay = 100 * time.Millisecond
 	_defaultMaxRetryDelay  = 5 * time.Second
@@ -29,6 +31,8 @@ type Postgres struct {
 	baseRetryDelay time.Duration
 	maxRetryDelay  time.Duration
 	maxPoolSize    int32
+	maxIdleConns   int32
+	maxIdleTime    time.Duration
 }
 
 func New(dsn string, logger slog.Logger, opts ...Option) (*Postgres, error) {
@@ -40,6 +44,8 @@ func New(dsn string, logger slog.Logger, opts ...Option) (*Postgres, error) {
 		baseRetryDelay: _defaultBaseRetryDelay,
 		maxRetryDelay:  _defaultMaxRetryDelay,
 		maxPoolSize:    _defaultMaxPoolSize,
+		maxIdleConns:   _defaultMinConns,
+		maxIdleTime:    _defaultMaxIdleTime,
 	}
 
 	for _, opt := range opts {
@@ -57,6 +63,8 @@ func New(dsn string, logger slog.Logger, opts ...Option) (*Postgres, error) {
 	}
 
 	poolConfig.MaxConns = pg.maxPoolSize
+	poolConfig.MinConns = pg.maxIdleConns
+	poolConfig.MaxConnIdleTime = pg.maxIdleTime
 
 	currentBackoff := pg.baseRetryDelay
 	for attemptCount := 1; attemptCount <= pg.connAttempts; attemptCount++ {

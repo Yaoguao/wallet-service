@@ -21,6 +21,18 @@ func MaxPoolSize(size int32) Option {
 	}
 }
 
+func MinConns(n int32) Option {
+	return func(p *Postgres) {
+		p.maxIdleConns = n
+	}
+}
+
+func MaxConnIdleTime(d time.Duration) Option {
+	return func(p *Postgres) {
+		p.maxIdleTime = d
+	}
+}
+
 func MaxConnAttempts(attempts int) Option {
 	return func(p *Postgres) {
 		p.connAttempts = attempts
