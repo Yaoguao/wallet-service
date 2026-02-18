@@ -31,8 +31,8 @@ func (or *OperationRepository) CreateOperation(
 	const op = "storage.postgres.CreateOperation"
 
 	query, args, err := or.postgres.Insert("operations").
-		Columns("wallet_id", "type", "amount").
-		Values(operation.WalletID, operation.Type, operation.Amount).
+		Columns("id", "wallet_id", "type", "amount").
+		Values(operation.ID, operation.WalletID, operation.Type, operation.Amount).
 		ToSql()
 
 	if err != nil {
