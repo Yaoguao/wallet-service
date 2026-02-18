@@ -55,8 +55,9 @@ func (wr *WalletRepository) GetWallet(ctx context.Context, id uuid.UUID) (*model
 	const op = "storage.postgres.GetWallet"
 
 	query, args, err := wr.postgres.
-		Select("wallets").
-		Columns("id", "balance", "created_at", "updated_at").
+		Select("id", "balance", "created_at", "updated_at").
+		From("wallets").
+		Where("id = ?", id).
 		ToSql()
 	if err != nil {
 		return nil, transaction.HandleError(op, "select", err)
@@ -67,6 +68,7 @@ func (wr *WalletRepository) GetWallet(ctx context.Context, id uuid.UUID) (*model
 		&wallet.ID, &wallet.Balance, &wallet.CreatedAt, &wallet.UpdatedAt,
 	)
 	if err != nil {
+		wr.log.Debug(err.Error())
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, storage.ErrWalletNotFound
 		}
