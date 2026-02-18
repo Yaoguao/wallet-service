@@ -2,10 +2,11 @@ package save
 
 import (
 	"context"
-	"encoding/json"
 	"log/slog"
 	"net/http"
 	"wallet-service/internal/domain/models"
+	"wallet-service/internal/http-server/handlers"
+	"wallet-service/pkg/helpers"
 )
 
 type WalletSaver interface {
@@ -24,22 +25,28 @@ type response struct {
 func New(log *slog.Logger, ws WalletSaver) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req request
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		err := helpers.ReadJSON(w, r, &req)
+		if err != nil {
 			log.Error("failed to decode request body")
 
-			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(response{Error: "invalid request body"})
+			handlers.ErrorResponse(w, r, http.StatusInternalServerError, "ops! decode json")
 			return
 		}
 
 		wallet, err := ws.CreateWallet(r.Context(), req.Amount)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(response{Error: "ops!"})
+			handlers.ErrorResponse(w, r, http.StatusInternalServerError, "error create wallet")
 			return
 		}
 
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(response{Wallet: wallet})
+		err = helpers.WriteJSON(
+			w,
+			http.StatusOK,
+			helpers.Envelope{"data": response{Wallet: wallet}},
+			nil)
+
+		if err != nil {
+			return
+		}
 	}
 }
