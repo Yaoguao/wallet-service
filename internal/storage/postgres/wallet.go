@@ -59,7 +59,7 @@ func (wr *WalletRepository) GetWallet(ctx context.Context, id uuid.UUID) (*model
 		Columns("id", "balance", "created_at", "updated_at").
 		ToSql()
 	if err != nil {
-		return nil, transaction.HandleError(op, "insert", err)
+		return nil, transaction.HandleError(op, "select", err)
 	}
 
 	wallet := &models.Wallet{}
