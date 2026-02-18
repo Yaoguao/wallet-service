@@ -8,4 +8,6 @@ var (
 
 	ErrOperationExists   = errors.New("operation already exists")
 	ErrOperationNotFound = errors.New("operation not found")
+
+	ErrInsufficientFunds = errors.New("insufficient funds")
 )

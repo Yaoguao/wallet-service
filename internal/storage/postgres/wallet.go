@@ -2,14 +2,17 @@ package postgres
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"time"
 	"wallet-service/internal/domain/models"
+	"wallet-service/internal/storage"
 	pgxdriver "wallet-service/pkg/pgx-driver"
 	"wallet-service/pkg/pgx-driver/transaction"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 )
 
 type WalletRepository struct {
@@ -94,6 +97,11 @@ func (wr *WalletRepository) IncreaseBalance(
 	var updatedAt time.Time
 	err = tx.QueryRow(ctx, query, args...).Scan(&newBalance, &updatedAt)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			wr.log.Error("wallet not found")
+			return 0, time.Time{}, storage.ErrWalletNotFound
+		}
+
 		return 0, time.Time{}, transaction.HandleError(op, "update", err)
 	}
 
@@ -129,8 +137,48 @@ func (wr *WalletRepository) DecreaseBalance(
 
 	if err != nil {
 		wr.log.Debug(op, err.Error())
+		if errors.Is(err, pgx.ErrNoRows) {
+			notFound, checkErr := wr.isWalletNotFound(ctx, tx, walletID)
+			if checkErr != nil {
+				return 0, time.Time{}, transaction.HandleError(op, "check_wallet", checkErr)
+			}
+
+			if notFound {
+				return 0, time.Time{}, storage.ErrWalletNotFound
+			}
+
+			return 0, time.Time{}, storage.ErrInsufficientFunds
+		}
+
 		return 0, time.Time{}, transaction.HandleError(op, "update", err)
 	}
 
 	return newBalance, updatedAt, nil
+}
+
+func (wr *WalletRepository) isWalletNotFound(
+	ctx context.Context,
+	tx pgxdriver.QueryExecuter,
+	walletID uuid.UUID,
+) (bool, error) {
+
+	query, args, err := wr.postgres.
+		Select("1").
+		From("wallets").
+		Where("id = ?", walletID).
+		ToSql()
+	if err != nil {
+		return false, err
+	}
+
+	var exists int
+	err = tx.QueryRow(ctx, query, args...).Scan(&exists)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return true, nil
+		}
+		return false, err
+	}
+
+	return false, nil
 }
