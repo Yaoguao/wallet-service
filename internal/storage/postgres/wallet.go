@@ -111,11 +111,11 @@ func (wr *WalletRepository) DecreaseBalance(
 
 	query, args, err := wr.postgres.
 		Update("wallets").
-		Set("balance", squirrel.And{
-			squirrel.Expr("balance - ?", amount),
+		Set("balance", squirrel.Expr("balance - ?", amount)).
+		Where(squirrel.And{
+			squirrel.Expr("id = ?", walletID),
 			squirrel.Expr("balance >= ?", amount),
 		}).
-		Where(squirrel.Expr("id = ?", walletID)).
 		Suffix("RETURNING balance, updated_at").
 		ToSql()
 
