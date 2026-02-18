@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 	"time"
-	"wallet-service/internal/services"
 	"wallet-service/internal/services/wallet/mocks"
+	"wallet-service/internal/storage"
 	pgxdriver "wallet-service/pkg/pgx-driver"
 
 	"github.com/google/uuid"
@@ -87,7 +87,7 @@ func TestWalletService_Withdraw_InsufficientFunds(t *testing.T) {
 	mockBalanceUpdater.
 		EXPECT().
 		DecreaseBalance(ctx, gomock.Any(), walletID, amount).
-		Return(int64(0), time.Time{}, services.ErrInsufficientFunds)
+		Return(int64(0), time.Time{}, storage.ErrInsufficientFunds)
 
 	service := &ServiceWallet{
 		txManager:            mockTxManager,
@@ -98,5 +98,5 @@ func TestWalletService_Withdraw_InsufficientFunds(t *testing.T) {
 	_, err := service.Withdraw(ctx, walletID, amount)
 
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "Withdraw")
+	require.Contains(t, err.Error(), "insufficient funds")
 }
