@@ -67,6 +67,9 @@ func (wr *WalletRepository) GetWallet(ctx context.Context, id uuid.UUID) (*model
 		&wallet.ID, &wallet.Balance, &wallet.CreatedAt, &wallet.UpdatedAt,
 	)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, storage.ErrWalletNotFound
+		}
 		return nil, transaction.HandleError(op, "insert", err)
 	}
 

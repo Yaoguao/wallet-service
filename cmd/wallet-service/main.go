@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 	"wallet-service/internal/config"
+	"wallet-service/internal/http-server/handlers/wallet/operation"
 	"wallet-service/internal/http-server/handlers/wallet/save"
 	"wallet-service/internal/http-server/middleware/logger"
 	"wallet-service/internal/lib/logger/sl"
@@ -69,6 +70,7 @@ func main() {
 
 	router.Route("/api/v1", func(r chi.Router) {
 		r.Post("/wallet", save.New(log, walletService))
+		r.Post("/wallet/operation", operation.New(log, walletService))
 	})
 
 	srv := &http.Server{

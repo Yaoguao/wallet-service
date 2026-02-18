@@ -8,6 +8,7 @@ import (
 	"time"
 	"wallet-service/internal/domain/models"
 	"wallet-service/internal/services"
+	"wallet-service/internal/storage"
 	pgxdriver "wallet-service/pkg/pgx-driver"
 	"wallet-service/pkg/pgx-driver/transaction"
 
@@ -99,6 +100,10 @@ func (ws *ServiceWallet) GetWallet(ctx context.Context, id uuid.UUID) (*models.W
 
 	wallet, err := ws.walletGetter.GetWallet(ctx, id)
 	if err != nil {
+		if errors.Is(err, storage.ErrWalletNotFound) {
+			return nil, storage.ErrWalletNotFound
+		}
+
 		ws.log.Error("failed to get wallet",
 			"wallet_id", id,
 			"error", err,
@@ -158,7 +163,10 @@ func (ws *ServiceWallet) Withdraw(ctx context.Context, walletID uuid.UUID, amoun
 			ws.walletBalanceUpdater.DecreaseBalance(ctx, tx, walletID, amount)
 
 		if err != nil {
-			return err // TODO - add handle error for ErrInsufficientFunds
+			if errors.Is(err, storage.ErrInsufficientFunds) {
+				return storage.ErrInsufficientFunds
+			}
+			return err
 		}
 
 		if err := ws.createOperationTx(ctx, tx, walletID, models.Withdraw, amount); err != nil {
@@ -175,6 +183,10 @@ func (ws *ServiceWallet) Withdraw(ctx context.Context, walletID uuid.UUID, amoun
 	})
 
 	if err != nil {
+		if errors.Is(err, storage.ErrInsufficientFunds) {
+			return nil, storage.ErrInsufficientFunds
+		}
+
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 
