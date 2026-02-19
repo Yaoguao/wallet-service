@@ -53,3 +53,28 @@ func MustLoad() *Config {
 
 	return &cfg
 }
+
+func MustLoadPath(configPath string) *Config {
+	if configPath == "" {
+		panic("Load config path is failed")
+	}
+
+	//panic("Load config failed")
+	if _, err := os.Stat(configPath); os.IsNotExist(err) {
+		panic(fmt.Sprintf("config file %s does not exists", configPath))
+
+	}
+
+	var cfg Config
+
+	if err := cleanenv.ReadConfig(configPath, &cfg); err != nil {
+		panic(fmt.Sprintf("Parse config is failed: %s", err.Error()))
+	}
+
+	cfg.Storage.Postgres.DSN = os.Getenv("DSN")
+	if cfg.Storage.Postgres.DSN == "" {
+		panic("Load DSN is failed")
+	}
+
+	return &cfg
+}
