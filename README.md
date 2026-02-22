@@ -17,7 +17,7 @@ cp config.env .env
 # отредактируйте .env под вашу среду
 ```
 
-3. Запустите через Docker Compose (локально поднимается БД и сервисы, если настроено):
+3. Запустите через Docker Compose:
 
 ```bash
 docker-compose up --build
@@ -54,10 +54,10 @@ migrate -path migrations -database "postgres://user:pass@host:5432/dbname?sslmod
 * Репозитории и слои сервиса разделены: обработчики HTTP -> сервисный слой -> репозитории -> БД.
 * Используется PostgreSQL (см. `migrations/`) и Docker для локальной разработки.
 
+---
 
 ## Contributing
 
 PR и issue приветствуются. Оставьте в описании PR краткое резюме изменений или рекомендаций.
 
----
 
