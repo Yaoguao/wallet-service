@@ -61,3 +61,30 @@ PR и issue приветствуются. Оставьте в описании P
 
 ---
 
+## Endpoints
+    Общая префикс-база: http://<host>:<port>/api/v1
+
+`POST /wallets` — создать кошелёк 
+Назначение: создать новый кошелёк с начальным балансом. (Handler: save.New(...))
+Request (JSON)
+```json
+{
+  "amount": 1000
+}
+```
+
+`POST /wallets/operation` — выполнить операцию (депозит / вывод)
+Назначение: сделать операцию над существующим кошельком — пополнение (DEPOSIT) или снятие (WITHDRAW). (Handler: operation.New(...).)
+Request (JSON)
+```json
+{
+  "wallet_id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "type": "DEPOSIT",   // или "WITHDRAW"
+  "amount": 500
+}
+```
+
+`GET /wallets/{WALLET_UUID}` — получить кошелёк по UUID
+Назначение: вернуть информацию о кошельке (balance, timestamps). (Handler: get.New(...).)
+Path params
+`WALLET_UUID` — UUID кошелька.
