@@ -22,6 +22,37 @@ services:
       timeout: 3s
       retries: 5
 
+  migrations:
+    build:
+      context: .
+      target: migrator
+    container_name: go-migrate
+    env_file:
+      - config.env
+    networks:
+      - mynetwork
+    depends_on:
+      wallet-db:
+        condition: service_healthy
+    restart: on-failure
+
+
+  wallet-service:
+    build:
+      context: .
+      target: wallet-service
+    container_name: wallet-service
+    env_file:
+      - config.env
+    ports:
+      - "8081:8081"
+    depends_on:
+      wallet-db:
+        condition: service_healthy
+    networks:
+      - mynetwork
+    restart: on-failure
+
 networks:
   mynetwork:
     driver: bridge

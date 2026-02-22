@@ -46,7 +46,7 @@ func MustLoad() *Config {
 		panic(fmt.Sprintf("Parse config is failed: %s", err.Error()))
 	}
 
-	cfg.Storage.Postgres.DSN = os.Getenv("DSN")
+	cfg.Storage.Postgres.DSN = os.Getenv("DSN_POSTGRES")
 	if cfg.Storage.Postgres.DSN == "" {
 		panic("Load DSN is failed")
 	}
@@ -54,7 +54,7 @@ func MustLoad() *Config {
 	return &cfg
 }
 
-func MustLoadPath(configPath string) *Config {
+func MustLoadPath(configPath, DSN string) *Config {
 	if configPath == "" {
 		panic("Load config path is failed")
 	}
@@ -71,7 +71,7 @@ func MustLoadPath(configPath string) *Config {
 		panic(fmt.Sprintf("Parse config is failed: %s", err.Error()))
 	}
 
-	cfg.Storage.Postgres.DSN = os.Getenv("DSN")
+	cfg.Storage.Postgres.DSN = DSN
 	if cfg.Storage.Postgres.DSN == "" {
 		panic("Load DSN is failed")
 	}
