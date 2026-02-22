@@ -6,8 +6,8 @@ http_server:
 
 storage:
   postgres:
-    max_open_conns: 100
-    max_idle_conns: 50
+    max_open_conns: 80
+    max_idle_conns: 80
     max_idle_time: 10m
     conn_attempts: 10
     base_retry_delay: 100ms

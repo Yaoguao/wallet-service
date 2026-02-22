@@ -1,0 +1,3 @@
+POST http://localhost:8081/api/v1/wallets/operation
+Content-Type: application/json
+@body.json
